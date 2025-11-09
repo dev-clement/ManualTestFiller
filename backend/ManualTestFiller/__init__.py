@@ -20,6 +20,8 @@ def create_app():
     app.logger.info(f"Running in DEBUG={app.config['DEBUG']}")
 
     with app.app_context():
-        from . import routes, models
+        from .routes.users_routes import user_bp
+        app.register_blueprint(user_bp)
+        db.create_all()
 
     return app
