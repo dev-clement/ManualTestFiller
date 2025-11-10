@@ -1,13 +1,15 @@
 import unittest
 from ManualTestFiller import create_app, db
+from ManualTestFiller.models import User
 
 class TestUserRegister(unittest.TestCase):
     def setUp(self):
         self.app = create_app()
         self.client = self.app.test_client()
         self.ctx = self.app.app_context()
-        self.ctx.push()
-        db.create_all()
+        with self.ctx:
+            self.ctx.push()
+            db.create_all()
     
     def tearDown(self):
         db.session.remove()
@@ -22,4 +24,9 @@ class TestUserRegister(unittest.TestCase):
         )
         self.assertEqual(response.status_code, 201)
         data = response.get_json()
-        self.assertIn('User register successfully', data['message'])
+        self.assertIn('User registered successfully', data['message'])
+
+        # Check the user actually exists in DB
+        with self.ctx:
+            user = User.query.filter_by(email='john@example.com').first()
+            self.assertIsNotNone(user)
