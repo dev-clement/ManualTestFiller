@@ -1,9 +1,9 @@
 import unittest
-from ManualTestFiller import create_app, db
 from ManualTestFiller.models.user import User
 from ManualTestFiller.models.tests import Test
 from ManualTestFiller.models.user_test_link import UserTestLink
 from sqlalchemy.exc import IntegrityError
+from ManualTestFiller import create_app, db
 
 class ManualTestCase(unittest.TestCase):
     """Base test case for the ManualTestFiller backend"""
@@ -11,18 +11,19 @@ class ManualTestCase(unittest.TestCase):
     def setUp(self):
         """Create a new app context, and a database for each test !"""
         self.app = create_app()
-        self.app.config.from_object('ManualTestFiller.config.TestConfig')
 
         with self.app.app_context():
-            db.init_app(self.app)
             db.create_all()
 
         self.app_context = self.app.app_context()
         self.app_context.push()
 
+
     def tearDown(self):
         """Tear down the database after each test"""
         db.session.remove()
+        db.drop_all()
+        self.app_context.pop()
     
     def test_user_creation(self):
         """Test that a user can be created and queried"""
@@ -49,7 +50,7 @@ class ManualTestCase(unittest.TestCase):
         self.assertEqual(user.test_links[0].test.title, 'Login functionality')
         self.assertEqual(len(test.user_links), 1)
         self.assertEqual(test.user_links[0].user.email, 'alice@example.com')
-    
+
     def test_duplicate_user_email(self):
         """Ensure unique constraint to user.email"""
         user1 = User(email='bob@example.com', password='12345')

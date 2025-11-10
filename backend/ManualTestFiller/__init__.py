@@ -9,12 +9,15 @@ def create_app():
     app = Flask(__name__)
 
     # Check the environment from the FLASK_ENV
-    env = os.environ.get('FLASK_ENV', 'dev')
+    env = os.environ.get('FLASK_ENV', 'test')
     if env == 'prod':
         app.config.from_object('ManualTestFiller.config.ProdConfig')
-    else:
+    elif env == 'dev':
         app.config.from_object('ManualTestFiller.config.DevConfig')
+    else:
+        app.config.from_object('ManualTestFiller.config.TestConfig')
 
+    db.init_app(app=app)
     setup_logging(app=app)
 
     app.logger.info(f"Running in DEBUG={app.config['DEBUG']}")
