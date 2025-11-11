@@ -7,4 +7,4 @@ class BaseUserView(MethodView):
         for field in required_fields:
             if field not in data:
                 return None, jsonify({'error': f'{field} is required'}), 400
-            return data, None, None
+        return data, None, None
