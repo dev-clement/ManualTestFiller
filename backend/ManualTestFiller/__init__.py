@@ -24,10 +24,11 @@ def create_app():
 
     app.logger.info(f"Running in DEBUG={app.config['DEBUG']}")
 
+    from .routes.user import create_user_blueprint
+    user_bp = create_user_blueprint()
+    app.register_blueprint(user_bp)
+
     with app.app_context():
-        from .routes.user import user_bp, register_user_routes
-        register_user_routes()
-        app.register_blueprint(user_bp)
         db.create_all()
 
     return app

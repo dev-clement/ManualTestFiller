@@ -14,10 +14,6 @@ class UserRegisterView(BaseUserView):
         email = data.get('email')
         password = data.get('password')
 
-        if not email or not password:
-            return jsonify({'status': 'error'
-                            , 'message': 'Email and / or password isn\'t present'}), 400
-        
         if User.query.filter_by(email=email).first():
             return jsonify({'status': 'error'
                             ,'message': 'Email already exists'}), 409
@@ -34,3 +30,6 @@ class UserRegisterView(BaseUserView):
         return jsonify({'status': 'success'
                         , 'message': 'User registered successfully'}), 201
 
+def register_register_route(user_bp):
+    """Register all user-related routes on the given blueprint"""
+    user_bp.add_url_rule('/register', view_func=UserRegisterView.as_view('register'))
